@@ -1043,7 +1043,7 @@ def transcode(options, technical):
             if not no_codecs and options.hls_add_codecs:
                 try:
                     codecs = extract_codecs(options, f"_{idx}.mp4")
-                except FileNotFoundError:
+                except (FileNotFoundError, RuntimeError):
                     logger.warning("cannot extract codec due to " "mp4file missing")
                     no_codecs = True
             bandwidth = options.video_bitrates[idx]
@@ -1069,7 +1069,7 @@ def transcode(options, technical):
     if not no_codecs and options.hls_add_codecs and options.mp4:
         try:
             codecs = extract_codecs(options, options.mp4_filename)
-        except FileNotFoundError:
+        except (FileNotFoundError, RuntimeError):
             pass
     codecs = f'; codecs="{codecs}"' if codecs else ""
     poster = f' poster="{options.poster_filename}"' if options.poster else ""
