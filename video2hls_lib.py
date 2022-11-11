@@ -662,7 +662,10 @@ def fix_options(options, technical):
 
     # Adapt options depending on video size
     width = technical["video"]["width"]
-    height = technical["video"]["width"]
+    height = technical["video"]["height"]
+
+    logger.warning(f"Video is {width} x {height}")
+
     for idx in reversed(range(len(options.video_widths))):
         if (options.video_widths[idx] > width * 1.1) and (
             options.video_widths[idx] * height / width > height * 1.1
@@ -675,18 +678,28 @@ def fix_options(options, technical):
                     # May happen for video_presets
                     pass
     if not options.poster_width:
-        options.poster_width = max(
-            *(w for w in options.video_widths if w <= options.poster_max_width)
-        )
+        try:
+            options.poster_width = max(
+                *(w for w in options.video_widths if w <= options.poster_max_width)
+            )
+        except TypeError:
+            options.poster_width = width
+
     if not options.mp4_width:
-        options.mp4_width = max(
-            *(w for w in options.video_widths if w <= options.mp4_max_width)
-        )
+        try:
+            options.mp4_width = max(
+                *(w for w in options.video_widths if w <= options.mp4_max_width)
+            )
+        except TypeError:
+            options.mp4_width = width
     if not options.mp4_bitrate:
-        options.mp4_bitrate = int(
-            options.video_bitrates[options.video_widths.index(options.mp4_width)]
-            * options.mp4_bitrate_factor
-        )
+        try:
+            options.mp4_bitrate = int(
+                options.video_bitrates[options.video_widths.index(options.mp4_width)]
+                * options.mp4_bitrate_factor
+            )
+        except Exception:
+            options.mp4_bitrate = options.video_bitrates[0] * options.mp4_bitrate_factor
 
 
 def poster(options, technical):
