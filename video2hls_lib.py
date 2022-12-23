@@ -475,7 +475,11 @@ def run(options, what, *args):
                 ),
             )
         )
-        raise RuntimeError(f"Unable to execute {what}")
+        raise RuntimeError(
+            f"Unable to execute {what}. Return code {proc.returncode}.\n"
+            f"\nStdout: {stdout}"
+            f"\n\nStderr: {stderr}"
+        )
     return stdout
 
 
